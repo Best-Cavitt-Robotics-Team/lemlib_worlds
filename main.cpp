@@ -102,8 +102,32 @@ lemlib::Chassis chassis(drivetrain, linearController, angularController, sensors
  * All other competition modes are blocked by initialize; it is recommended
  * to keep execution time for this mode under a few seconds.
  */
+int autonSelected = 0;
+std::string autonNames[] = {"Red Left", "Red Right", "Blue Left", "Blue Right", "Skills"};
+int totalAutons = 5;
+
+void printAutonSelector() {
+    pros::lcd::clear();
+    pros::lcd::print(0, "Select Auton:");
+    pros::lcd::print(1, "> %s", autonNames[autonSelected].c_str());
+    pros::lcd::print(2, "Left: prev  Right: next");
+}
+
 void initialize() {
     pros::lcd::initialize(); // initialize brain screen
+    printAutonSelector();
+
+    // Left button — go to previous auton
+    pros::lcd::register_btn0_cb([]() {
+        autonSelected = (autonSelected - 1 + totalAutons) % totalAutons;
+        printAutonSelector();
+    });
+
+    // Right button — go to next auton
+    pros::lcd::register_btn2_cb([]() {
+        autonSelected = (autonSelected + 1) % totalAutons;
+        printAutonSelector();
+    });
     chassis.calibrate(); // calibrate sensors
 
     // the default rate is 50. however, if you need to change the rate, you
@@ -244,12 +268,20 @@ void autonomous() {
     // Start sensor correction in background
     pros::Task sensorTask(sensorCorrectionFn);
 
-    // Your normal auto runs here, sensors correct in background
-    chassis.moveToPoint(24, 24, 2000);
-    chassis.turnToHeading(90, 1000);
-    chassis.moveToPoint(48, 48, 2000);
-    // etc...
 
+    //Auto
+    switch (autonSelected) {
+        case 0: //Right 4 push
+            chassis.setPose(0, 0, 0);
+            chassis.moveToPose(31, -15, 90, 2000, {.lead = 0.2, .minSpeed = 20, .earlyExitRange = 8});
+            pros::delay(750);
+            chassis.moveToPose(31, 16, 90, 750, {.forwards = false, .minSpeed = 100});
+            pros::delay(1000);
+            chassis.moveToPose(31, 8, 90, 750, {.minSpeed = 50, .earlyExitRange = 3});
+            chassis.moveToPose(42, 25, 90, 2000, {.forwards = false, .lead = 0.9, .maxSpeed = 100, .minSpeed = 50});
+            break;
+    }
+    
     // Kill the task when auto is done
     sensorTask.remove();
 }
