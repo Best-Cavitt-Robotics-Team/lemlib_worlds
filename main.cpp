@@ -14,25 +14,12 @@ pros::MotorGroup rightMotors({10, -9, 8}, pros::MotorGearset::blue); // right mo
 // Inertial Sensor on port 19
 pros::Imu imu(19);
 
-// tracking wheels
-// horizontal tracking wheel encoder. Rotation sensor, port 20, not reversed
-pros::Rotation horizontalEnc(20);
-// vertical tracking wheel encoder. Rotation sensor, port 11, reversed
-pros::Rotation verticalEnc(-11);
-// horizontal tracking wheel. 2.75" diameter, 5.75" offset, back of the robot (negative)
-lemlib::TrackingWheel horizontal(&horizontalEnc, lemlib::Omniwheel::NEW_275, -5.75);
-// vertical tracking wheel. 2.75" diameter, 2.5" offset, left of the robot (negative)
-lemlib::TrackingWheel vertical(&verticalEnc, lemlib::Omniwheel::NEW_275, -2.5);
-
 //intake motors
 pros::Motor intakebottom(1, pros::MotorGearset::blue);
 pros::Motor intaketop(2, pros::MotorGearset::blue);
 
-//distance sensors
-pros::Distance frontDist(10); // change ports to match yours
-pros::Distance backDist(11);
-pros::Distance leftDist(12);
-pros::Distance rightDist(13);
+//odom
+pros::Rotation verticalEncoder(7); /////////////////////////////////////////////////////////////////////////////
 
 //pnuematics
 pros::adi::DigitalOut scraper1('G', false);
@@ -40,13 +27,21 @@ pros::adi::DigitalOut scraper2('H', false);
 pros::adi::DigitalOut ballblock('E', false);
 pros::adi::DigitalOut descore('F', false);
 
+//tracking wheel
+lemlib::TrackingWheel verticalWheel(
+    &verticalEncoder,
+    lemlib::Omniwheel::NEW_275, // replace with wheel size /////////////////////////////////////////////////////////////////////////////
+    0.0f,  // horizontal offset from center (replace)/////////////////////////////////////////////////////////////////////////////
+    0.0f   // vertical offset from center (replace)/////////////////////////////////////////////////////////////////////////////
+);
+
 // drivetrain settings
 lemlib::Drivetrain drivetrain(&leftMotors, // left motor group
                               &rightMotors, // right motor group
-                              10, // 10 inch track width
-                              lemlib::Omniwheel::NEW_4, // using new 4" omnis
-                              360, // drivetrain rpm is 360
-                              2 // horizontal drift is 2. If we had traction wheels, it would have been 8
+                              10, // 10 inch track width/////////////////////////////////////////////////////////////////////////////
+                              lemlib::Omniwheel::NEW_4, // using new 4" omnis/////////////////////////////////////////////////////////////////////////////
+                              360, // drivetrain rpm is 360/////////////////////////////////////////////////////////////////////////////
+                              2 // horizontal drift is 2. If we had traction wheels, it would have been 8/////////////////////////////////////////////////////////////////////////////
 );
 
 // lateral motion controller
@@ -74,12 +69,14 @@ lemlib::ControllerSettings angularController(2, // proportional gain (kP)
 );
 
 // sensors for odometry
-lemlib::OdomSensors sensors(&vertical, // vertical tracking wheel
+lemlib::OdomSensors sensors(&verticalWheel, // vertical tracking wheel
                             nullptr, // vertical tracking wheel 2, set to nullptr as we don't have a second one
-                            &horizontal, // horizontal tracking wheel
+                            nullptr, // horizontal tracking wheel
                             nullptr, // horizontal tracking wheel 2, set to nullptr as we don't have a second one
                             &imu // inertial sensor
 );
+
+
 
 // input curve for throttle input during driver control
 lemlib::ExpoDriveCurve throttleCurve(3, // joystick deadband out of 127
@@ -94,13 +91,13 @@ lemlib::ExpoDriveCurve steerCurve(3, // joystick deadband out of 127
 );
 
 // create the chassis
-lemlib::Chassis chassis(drivetrain, linearController, angularController, sensors, &throttleCurve, &steerCurve);
+lemlib::Chassis chassis(drivetrain, linearController, angularController, sensors, nullptr, nullptr); //prev had &throttleCurve, &steerCurve
 
 /**
  * Runs initialization code. This occurs as soon as the program is started.
  *
  * All other competition modes are blocked by initialize; it is recommended
- * to keep execution time for this mode under a few seconds.
+ * to keep execution time for this mode under a few seconds.ss
  */
 int autonSelected = 0;
 std::string autonNames[] = {"Red Left", "Red Right", "Blue Left", "Blue Right", "Skills"};
@@ -153,91 +150,6 @@ void initialize() {
     });
 }
 
-//DISTANCE SENSOR CODE
-
-// Convert mm to inches
-float distInches(pros::Distance& sensor) {
-    return sensor.get() / 25.4f;
-}
-
-// ── POSITION CORRECTION ──────────────────────────────
-// If you know the field is 144x144 inches (VEX full field)
-// you can calculate your X and Y from opposite sensor pairs
-float getXFromSensors() {
-    float left  = distInches(leftDist);
-    float right = distInches(rightDist);
-    // X position from left wall = left sensor reading
-    // cross-check: left + right should equal field width (72" for half field)
-    return left; 
-}
-
-float getYFromSensors() {
-    float front = distInches(frontDist);
-    float back  = distInches(backDist);
-    return back; // Y position from back wall
-}
-
-// ── ANGULAR CORRECTION ───────────────────────────────
-// Uses front+back OR left+right pair to find angle offset
-// If perfectly straight, both sides of a pair read the same
-float getAngleFromLR() {
-    float left  = distInches(leftDist);
-    float right = distInches(rightDist);
-    // robot width (inches) — measure your robot
-    const float robotWidth = 14.0f;
-    return atan2f(left - right, robotWidth) * (180.0f / M_PI);
-}
-
-float getAngleFromFB() {
-    float front = distInches(frontDist);
-    float back  = distInches(backDist);
-    const float robotLength = 14.0f; // measure your robot
-    return atan2f(front - back, robotLength) * (180.0f / M_PI);
-}
-
-void sensorCorrectionFn() {
-    while (true) {
-        float left  = distInches(leftDist);
-        float right = distInches(rightDist);
-        float front = distInches(frontDist);
-        float back  = distInches(backDist);
-
-        lemlib::Pose currentPose = chassis.getPose();
-
-        // ── POSITION CORRECTION ──────────────────────
-        // Only correct when close enough to trust the reading
-        bool leftValid  = left  < 60.0f;
-        bool rightValid = right < 60.0f;
-        bool frontValid = front < 60.0f;
-        bool backValid  = back  < 60.0f;
-
-        float newX = currentPose.x;
-        float newY = currentPose.y;
-        float newTheta = currentPose.theta;
-
-        if (leftValid)  newX = left;
-        if (backValid)  newY = back;
-
-        // ── ANGULAR CORRECTION ───────────────────────
-        // Use left+right pair if both walls are visible
-        if (leftValid && rightValid) {
-            float angleError = getAngleFromLR();
-            if (fabs(angleError) > 1.5f) // deadzone to prevent jitter
-                newTheta += angleError;
-        }
-        // Fall back to front+back pair
-        else if (frontValid && backValid) {
-            float angleError = getAngleFromFB();
-            if (fabs(angleError) > 1.5f)
-                newTheta += angleError;
-        }
-
-        chassis.setPose(newX, newY, newTheta);
-
-        pros::delay(20);
-    }
-}
-
 /**
  * Runs while the robot is disabled
  */
@@ -258,32 +170,35 @@ ASSET(example_txt); // '.' replaced with "_" to make c++ happy
  * This is an example autonomous routine which demonstrates a lot of the features LemLib has to offer
  */
 
-
-
- 
-
-
+//ORDER
+//.forwards
+//.lead
+//.maxSpeed
+//.minSpeed
+//.earlyExitRange
 
 void autonomous() {
-    // Start sensor correction in background
-    pros::Task sensorTask(sensorCorrectionFn);
-
-
-    //Auto
     switch (autonSelected) {
         case 0: //Right 4 push
             chassis.setPose(0, 0, 0);
-            chassis.moveToPose(31, -15, 90, 2000, {.lead = 0.2, .minSpeed = 20, .earlyExitRange = 8});
+            chassis.moveToPose(31, -15, 90, 2000, {.lead = 0.2, .minSpeed = 20});
+            pros::delay(1000); 
+            scraper1.set_value(true);
+            scraper2.set_value(true);
+            intakebottom.move_velocity(-600);
+            chassis.waitUntilDone();
             pros::delay(750);
-            chassis.moveToPose(31, 16, 90, 750, {.forwards = false, .minSpeed = 100});
+            chassis.moveToPose(31, 16, 90, 750, {.forwards = false, .minSpeed = 100}, false);
+            intaketop.move_velocity(600);
             pros::delay(1000);
-            chassis.moveToPose(31, 8, 90, 750, {.minSpeed = 50, .earlyExitRange = 3});
+            intakebottom.move_velocity(0);
+            intaketop.move_velocity(0);
+            scraper1.set_value(false);
+            scraper2.set_value(false);
+            chassis.moveToPose(31, 6, 90, 750, {.minSpeed = 50, .earlyExitRange = 3});
             chassis.moveToPose(42, 25, 90, 2000, {.forwards = false, .lead = 0.9, .maxSpeed = 100, .minSpeed = 50});
-            break;
+            break;    
     }
-    
-    // Kill the task when auto is done
-    sensorTask.remove();
 }
 
 
