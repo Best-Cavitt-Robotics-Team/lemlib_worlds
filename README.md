@@ -4,7 +4,8 @@ the lemlib project we are using for matches at worlds
 
 contains:
 cubic drive
-distance sensors (untuned)
 pid (untuned)
-no autons yet
-correct config (except distance sensors)
+untested right 4
+correct config
+odom NEEDS CONFIG
+DRIVE AND WHEEL SIZE NEED CONFIG
