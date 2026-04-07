@@ -317,29 +317,30 @@ void leftFour(){
 
 void leftSeven(){
     //right 7 reversed
-    chassis.setPose(0, 0, -30);
+    chassis.setPose(0, 0, 0);
     intakebottom.move_velocity(-600);
-    chassis.moveToPose(-5, 16, 0, 1500, {.lead = 0.2, .minSpeed = 50, .earlyExitRange = 2}); //prev .early = 3 //10
-    chassis.turnToHeading(-135, 300);
-    chassis.moveToPose(-15, 0, -180, 2000, {.horizontalDrift = 2, .lead = 0.1, .minSpeed = 50, .earlyExitRange = 5});
-    chassis.moveToPose(-14, -15, -180, 1000, {.lead = 0, .maxSpeed = 75});
-    pros::delay(10000);
-    //left 4 code
+    chassis.moveToPose(-9, 15, -45, 1500, {.horizontalDrift = 2, .lead = 0.7, .minSpeed = 50, .earlyExitRange = 3}); //7,10
+    chassis.turnToHeading(-130, 500);
+    chassis.moveToPoint(-20.5, 0, 1700, {.minSpeed = 50, .earlyExitRange = 5}); //eer 5 //ms = 75 //2000 //hd = 2 //21
+    chassis.turnToHeading(-180, 300, {.minSpeed = 30, .earlyExitRange = 3}); //50
+    chassis.moveToPose(-20, -15, -180, 1000, {.maxSpeed = 75, .minSpeed = 50});
     pros::delay(100);
     scraper1.set_value(true);
     scraper2.set_value(true);
-    intakebottom.move_velocity(-600);
+    //left 4 code
+    pros::delay(100);
     chassis.waitUntilDone();
     pros::delay(750);
-    chassis.moveToPose(31, 16, -90, 750, {.forwards = false, .lead = 0, .minSpeed = 100}, false);
+    chassis.moveToPose(-20, 10, -180, 750, {.forwards = false, .lead = 0.1, .minSpeed = 80}, false); //l 0
     intaketop.move_velocity(600);
-    pros::delay(1000);
+    pros::delay(500);
     intakebottom.move_velocity(0);
     intaketop.move_velocity(0);
     scraper1.set_value(false);
     scraper2.set_value(false);
-    chassis.moveToPose(31, 6, -90, 750, {.lead = 0, .minSpeed = 50, .earlyExitRange = 3});
-    chassis.moveToPose(42, 25, -90, 2000, {.forwards = false, .horizontalDrift = 4, .lead = 0.4, .maxSpeed = 100, .minSpeed = 50});   
+    chassis.moveToPose(-20, 0, -180, 750, {.lead = 0, .minSpeed = 50, .earlyExitRange = 3});
+    chassis.moveToPose(-14, 19, -180, 2000, {.forwards = false, .horizontalDrift = 4, .lead = 0.6, .maxSpeed = 100, .minSpeed = 50, .earlyExitRange = 5}); //14
+    chassis.turnToHeading(-180, 250);    
 }
 
 void leftSplit(){
@@ -400,6 +401,7 @@ float cubicDrive(float input, float scaling = 1.0f) {
 bool scraper1out = false;
 bool scraper2out = false;
 bool descoreUp = false;
+bool midD = false;
 
 void opcontrol() {
     // controller
@@ -461,7 +463,11 @@ void opcontrol() {
             descore.set_value(descoreUp);
         }
   
-
+        //middle goal descore
+        if(controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B)){
+            midD = !midD;
+            midDescore.set_value(midD);
+        }
         //delay
         pros::delay(10);
     }
