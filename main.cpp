@@ -235,6 +235,7 @@ void rightFour(){
     chassis.moveToPose(18, 0, 180, 750, {.lead = 0, .minSpeed = 50, .earlyExitRange = 3});
     chassis.moveToPose(23, 19, 180, 2000, {.forwards = false, .horizontalDrift = 4, .lead = 0.6, .maxSpeed = 100, .minSpeed = 50, .earlyExitRange = 8}); //prev 23,21.5  
     chassis.turnToHeading(180, 250); 
+    chassis.setBrakeMode(pros::E_MOTOR_BRAKE_HOLD);
 }
 
 void rightSeven(){
@@ -312,7 +313,8 @@ void leftFour(){
     scraper2.set_value(false);
     chassis.moveToPose(-15.5, 0, -180, 750, {.lead = 0, .minSpeed = 50, .earlyExitRange = 3});
     chassis.moveToPose(-10, 19, -180, 2000, {.forwards = false, .horizontalDrift = 4, .lead = 0.6, .maxSpeed = 100, .minSpeed = 50, .earlyExitRange = 8}); //prev 23,21.5  
-    chassis.turnToHeading(-180, 250);   
+    chassis.turnToHeading(-180, 250);
+    chassis.setBrakeMode(pros::E_MOTOR_BRAKE_HOLD);   
 }
 
 void leftSeven(){
@@ -341,6 +343,7 @@ void leftSeven(){
     chassis.moveToPose(-20, 0, -180, 750, {.lead = 0, .minSpeed = 50, .earlyExitRange = 3});
     chassis.moveToPose(-14, 19, -180, 2000, {.forwards = false, .horizontalDrift = 4, .lead = 0.6, .maxSpeed = 100, .minSpeed = 50, .earlyExitRange = 5}); //14
     chassis.turnToHeading(-180, 250);    
+    chassis.setBrakeMode(pros::E_MOTOR_BRAKE_HOLD);
 }
 
 void leftSplit(){
