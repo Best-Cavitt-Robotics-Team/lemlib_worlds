@@ -164,7 +164,7 @@ void initialize() {
     pros::lcd::initialize();
     chassis.calibrate();
     pros::delay(50);
-    controller.set_text(0, 0, "有志者事竟成"); 
+     
     pros::Task screen_task([&]() {
     // while (true) {
     // // print robot location to the brain screen
@@ -542,3 +542,4 @@ void opcontrol() {
         pros::delay(10);
     }
 }
+// controller.set_text(0, 0, "有志者事竟成");
