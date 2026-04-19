@@ -165,7 +165,7 @@ void initialize() {
     chassis.calibrate();
     pros::delay(50);
      
-    pros::Task screen_task([&]() {
+    // pros::Task screen_task([&]() {
     // while (true) {
     // // print robot location to the brain screen
     // pros::lcd::print(1, "X: %f", chassis.getPose().x); // x
@@ -182,7 +182,7 @@ void initialize() {
     // // delay to save resources
     // pros::delay(50);
     // }
-    });
+    // });
     // pros::delay(50);
     pros::Task selector(selectorTask);
 }
@@ -217,7 +217,7 @@ void rightFour(){
     chassis.setPose(0,0,90);
     chassis.moveToPoint(17.5, 0, 1500, {.minSpeed = 50, .earlyExitRange = 5}); //180
     chassis.turnToHeading(180, 250, {.minSpeed = 40});
-    chassis.moveToPose(17.5, -12, 180, 1000, {.lead = 0, .maxSpeed = 70, .minSpeed = 40}); //18//14
+    chassis.moveToPose(17.5, -16, 180, 1000, {.lead = 0, .maxSpeed = 70, .minSpeed = 40}); //18//14
     pros::delay(50); //pev 100
     scraper1.set_value(true);
     scraper2.set_value(true);
@@ -337,7 +337,7 @@ void leftSeven(){
     chassis.turnToHeading(-130, 500);
     chassis.moveToPoint(-20, 0, 1700, {.minSpeed = 50, .earlyExitRange = 5}); //eer 5 //ms = 75 //2000 //hd = 2 //21
     chassis.turnToHeading(-180, 300, {.minSpeed = 30, .earlyExitRange = 3}); //50
-    chassis.moveToPose(-19, -14, -180, 1000, {.maxSpeed = 75, .minSpeed = 50});
+    chassis.moveToPose(-19, -14, -180, 1100, {.maxSpeed = 75, .minSpeed = 50}); //14
     pros::delay(100);
     scraper1.set_value(true);
     scraper2.set_value(true);
@@ -361,10 +361,11 @@ void leftSplit(){
     chassis.setBrakeMode(pros::E_MOTOR_BRAKE_HOLD);
     chassis.setPose(0, 0, 0);
     intakebottom.move_velocity(-600);
-    chassis.moveToPose(-9, 17, -30, 1500, {.horizontalDrift = 2, .lead = 0.6, .minSpeed = 40, .earlyExitRange = 3}); //-9,17, //ms50//7
+    chassis.moveToPose(-8, 17, -30, 1500, {.horizontalDrift = 2, .lead = 0.6, .minSpeed = 40, .earlyExitRange = 3}); //-9,17, //ms50//7
     chassis.turnToHeading(-130, 500);
-    chassis.moveToPose(5, 23, -130, 1000, {.forwards = false, .lead = 0.6, .minSpeed = 50}, false);//.5
+    chassis.moveToPose(5, 22, -130, 1000, {.forwards = false, .lead = 0.6, .minSpeed = 50}, false);//.5//23
     chassis.waitUntilDone();
+    chassis.turnToPoint(-20, 0, 250);//
     ballblock.set_value(false);
     intaketop.move_velocity(300);
     descore.set_value(true);
@@ -372,18 +373,17 @@ void leftSplit(){
     intaketop.move_velocity(0);
     // chassis.turnToHeading(-140, 250);
     chassis.turnToPoint(-20, 0, 250);
-    chassis.waitUntilDone();
+    // chassis.waitUntilDone();
     chassis.moveToPoint(-20, 0, 1700, {.maxSpeed = 80, .minSpeed = 50, .earlyExitRange = 5}); //eer 5 //ms = 75 //2000 //hd = 2 //20.5
     chassis.turnToHeading(-180, 300, {.minSpeed = 30, .earlyExitRange = 3}); //50
-    chassis.moveToPose(-19, -13, -180, 1000, {.maxSpeed = 75, .minSpeed = 50});//14
+    chassis.moveToPose(-19, -16, -180, 1000, {.maxSpeed = 75, .minSpeed = 50});//14//19
     pros::delay(100);
     scraper1.set_value(true);
     scraper2.set_value(true);
     ballblock.set_value(true);
     descore.set_value(false);
-    chassis.waitUntilDone();
     //left 4 code (skeleton)
-    pros::delay(1500);//1200
+    pros::delay(1000);//1200
     chassis.moveToPoint(-19, 13, 750, {.forwards = false, .maxSpeed = 100, .minSpeed = 80}, false); //l 0 //14
     intaketop.move_velocity(600);
     pros::delay(1500);
