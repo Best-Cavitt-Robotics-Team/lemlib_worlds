@@ -133,22 +133,22 @@ void selectorTask(void*) {
     pros::lcd::register_btn0_cb([]() {
         autonSelection = (autonSelection - 1) % NUM_AUTONS;
         if (autonSelection == 0) pros::lcd::set_text(0, "Right 4 Push");
-        else if (autonSelection == 1) pros::lcd::set_text(0, "Right 7 Push");
-        else if (autonSelection == 2) pros::lcd::set_text(0, "Right Split 3-4");
-        else if (autonSelection == 3) pros::lcd::set_text(0, "Left 4 Push");
+        else if (autonSelection == 1) pros::lcd::set_text(0, "Left 4 Push");
+        else if (autonSelection == 2) pros::lcd::set_text(0, "Left Split 3-4");
+        else if (autonSelection == 3) pros::lcd::set_text(0, "Win Point");
         else if (autonSelection == 4) pros::lcd::set_text(0, "Left 7 Push");
-        else if (autonSelection == 5) pros::lcd::set_text(0, "Left Split 3-4");
-        else if (autonSelection == 6) pros::lcd::set_text(0, "Win Point");
+        else if (autonSelection == 5) pros::lcd::set_text(0, "Right 7 Push");
+        else if (autonSelection == 6) pros::lcd::set_text(0, "Right Splie 3-4");
     });
     pros::lcd::register_btn2_cb([]() {
         autonSelection = (autonSelection + 1 + NUM_AUTONS) % NUM_AUTONS;
         if (autonSelection == 0) pros::lcd::set_text(0, "Right 4 Push");
-        else if (autonSelection == 1) pros::lcd::set_text(0, "Right 7 Push");
-        else if (autonSelection == 2) pros::lcd::set_text(0, "Right Split 3-4");
-        else if (autonSelection == 3) pros::lcd::set_text(0, "Left 4 Push");
+        else if (autonSelection == 1) pros::lcd::set_text(0, "Left 4 Push");
+        else if (autonSelection == 2) pros::lcd::set_text(0, "Left Split 3-4");
+        else if (autonSelection == 3) pros::lcd::set_text(0, "Win Point");
         else if (autonSelection == 4) pros::lcd::set_text(0, "Left 7 Push");
-        else if (autonSelection == 5) pros::lcd::set_text(0, "Left Split 3-4");
-        else if (autonSelection == 6) pros::lcd::set_text(0, "Win Point");
+        else if (autonSelection == 5) pros::lcd::set_text(0, "Right 7 Push");
+        else if (autonSelection == 6) pros::lcd::set_text(0, "Right Splie 3-4");
     });
 
     while (true) pros::delay(100);
@@ -217,24 +217,29 @@ void rightFour(){
     chassis.setPose(0,0,90);
     chassis.moveToPoint(17.5, 0, 1500, {.minSpeed = 50, .earlyExitRange = 5}); //180
     chassis.turnToHeading(180, 250, {.minSpeed = 40});
-    chassis.moveToPose(17.5, -16, 180, 1000, {.lead = 0, .maxSpeed = 70, .minSpeed = 40}); //18//14
+    chassis.moveToPose(17.5, -13, 180, 1000, {.lead = 0, .maxSpeed = 70, .minSpeed = 40}); //18//14
     pros::delay(50); //pev 100
     scraper1.set_value(true);
     scraper2.set_value(true);
     intakebottom.move_velocity(-600);
     descore.set_value(true);
     // chassis.waitUntilDone();
-    pros::delay(1100); //tune //pev 1000
+    pros::delay(1000); //tune //pev 1000
     chassis.moveToPose(17.5, 16, 180, 750, {.forwards = false, .lead = 0.5, .maxSpeed = 100, .minSpeed = 70}, false);
     intaketop.move_velocity(600);
-    pros::delay(1200); //1000
+    pros::delay(900); //1000
     descore.set_value(false);
     intakebottom.move_velocity(0);
     intaketop.move_velocity(0);
     scraper1.set_value(false);
     scraper2.set_value(false);
-    chassis.moveToPose(18, 0, 180, 750, {.lead = 0, .minSpeed = 50, .earlyExitRange = 3});
-    chassis.moveToPose(23, 19, 180, 2000, {.forwards = false, .horizontalDrift = 4, .lead = 0.6, .maxSpeed = 100, .minSpeed = 50, .earlyExitRange = 8}); //prev 23,21.5  
+    chassis.moveToPoint(18, 0, 750, {.minSpeed = 50, .earlyExitRange = 3});
+    // chassis.turnToHeading(215, 500, {.minSpeed = 50, .earlyExitRange = 3});
+    // //chassis.turnToPoint(23, 16, 250, {.direction = AngularDirection::CCW_COUNTERCLOCKWISE, .minSpeed = 50, .earlyExitRange = 3});
+    // chassis.moveToPoint(23, 16, 1000, {.minSpeed = 50, .earlyExitRange = 4});
+    // chassis.turnToHeading(180, 250, {.minSpeed = 50, .earlyExitRange = 3});
+    // chassis.moveToPoint(23, 20, 750, {.minSpeed = 70});
+    chassis.moveToPose(23, 19, 180, 2000, {.forwards = false, .horizontalDrift = 4, .lead = 0.65, .minSpeed = 70, .earlyExitRange = 8});//6  //ms=50
     chassis.turnToHeading(180, 250); 
     
 }
@@ -401,62 +406,69 @@ void winPoint(){
     chassis.setPose(0,0,90);
     chassis.moveToPoint(17.5, 0, 1500, {.minSpeed = 50, .earlyExitRange = 5}); //180
     chassis.turnToHeading(180, 250, {.minSpeed = 40});
-    chassis.moveToPose(17.5, -12, 180, 1000, {.lead = 0, .maxSpeed = 70, .minSpeed = 40}); //18//12
+    chassis.moveToPose(17.5, -14.75, 180, 1000, {.lead = 0, .maxSpeed = 70, .minSpeed = 40}); //15//1
     pros::delay(50); //pev 100
     scraper1.set_value(true);
     scraper2.set_value(true);
     intakebottom.move_velocity(-600);
-    descore.set_value(false);
-    pros::delay(1200); //tune //pev 1100
+    descore.set_value(true);
+    pros::delay(1100); //tune //pev 1200
     chassis.moveToPose(17.5, 17, 180, 750, {.forwards = false, .lead = 0.5, .maxSpeed = 100, .minSpeed = 70}, false);
     intaketop.move_velocity(600);
     pros::delay(1200); //1000
-    descore.set_value(true);
     intaketop.move_velocity(0);
     scraper1.set_value(false);
     scraper2.set_value(false);
     chassis.moveToPoint(18, 7, 750, {.minSpeed = 50, .earlyExitRange = 3});
     chassis.turnToHeading(305, 250, {.minSpeed = 30, .earlyExitRange = 3});
-    chassis.moveToPoint(5, 12, 1000, {.minSpeed = 30, .earlyExitRange = 3});
+    chassis.moveToPoint(5, 12, 1000, {.minSpeed = 30, .earlyExitRange = 3});//9
     chassis.turnToHeading(270, 250, {.minSpeed = 30, .earlyExitRange = 3});
-    chassis.moveToPoint(-26, 13, 2000, {.minSpeed = 30, .earlyExitRange = 3});//23
-    chassis.turnToHeading(242, 250, {.minSpeed = 30, .earlyExitRange = 3});
-    chassis.moveToPoint(-17, 19, 1500, {.forwards = false}, false);
+    chassis.moveToPoint(-22, 14, 2000, {.minSpeed = 30, .earlyExitRange = 3});//23//13
+    chassis.turnToHeading(225, 250, {.minSpeed = 30, .earlyExitRange = 3});//242
+    chassis.moveToPoint(-16, 18.5, 1500, {.forwards = false}, false);//19//17
     chassis.waitUntilDone();
+    // chassis.turnToHeading(225, 500);
     ballblock.set_value(false);
-    intaketop.move_velocity(600);
-    pros::delay(1500);
+    intakebottom.move_velocity(350);
+    intaketop.move_velocity(-300);
+    pros::delay(200);
+    intakebottom.move_velocity(-350);
+    intaketop.move_velocity(300);
+    pros::delay(750);//1500
 
     intaketop.move_velocity(0);
+    ballblock.set_value(true);
     chassis.moveToPoint(-38, 0, 1700, {.maxSpeed = 80, .minSpeed = 50, .earlyExitRange = 5});
     chassis.turnToHeading(180, 300, {.minSpeed = 30, .earlyExitRange = 3}); //50
-    chassis.moveToPose(-37, -16, -180, 1000, {.maxSpeed = 75, .minSpeed = 50});//13.5
+    chassis.moveToPose(-37, -20, -180, 1000, {.maxSpeed = 75, .minSpeed = 50});//16
     pros::delay(100);
     scraper1.set_value(true);
     scraper2.set_value(true);
-    ballblock.set_value(true);
+    intakebottom.move_velocity(-600);
     //left 4 code (skeleton)
-    pros::delay(1300);//1200
+    pros::delay(1200);//1300
     chassis.moveToPoint(-38, 16, 750, {.forwards = false, .maxSpeed = 100, .minSpeed = 80}, false); //l 0 //14
     intaketop.move_velocity(600);
+    pros::delay(1500);
     // pros::delay(1500);
-    // intakebottom.move_velocity(0);
-    // intaketop.move_velocity(0);
-    // scraper1.set_value(false);
-    // scraper2.set_value(false);
-    // chassis.moveToPose(-37, 0, -180, 750, {.lead = 0, .minSpeed = 50, .earlyExitRange = 3});
-    // chassis.moveToPose(-33, 19, -180, 2000, {.forwards = false, .horizontalDrift = 4, .lead = 0.6, .maxSpeed = 100, .minSpeed = 50, .earlyExitRange = 5}); //14
-    // chassis.turnToHeading(180, 250);
+    intakebottom.move_velocity(0);
+    intaketop.move_velocity(0);
+    scraper1.set_value(false);
+    scraper2.set_value(false);
+    descore.set_value(false);
+    chassis.moveToPose(-37, 0, -180, 750, {.lead = 0, .minSpeed = 50, .earlyExitRange = 3});
+    chassis.moveToPose(-32, 19, -180, 2000, {.forwards = false, .horizontalDrift = 4, .lead = 0.6, .minSpeed = 50, .earlyExitRange = 5}); //14
+    chassis.turnToHeading(180, 250);
 }
 
 void autonomous() {
     if (autonSelection == 0) rightFour();
-    else if (autonSelection == 1) rightSeven();
-    else if (autonSelection == 2) rightSplit();
-    else if (autonSelection == 3) leftFour();
+    else if (autonSelection == 1) leftFour();
+    else if (autonSelection == 2) leftSplit();
+    else if (autonSelection == 3) winPoint();
     else if (autonSelection == 4) leftSeven();
-    else if (autonSelection == 5) leftSplit();
-    else if (autonSelection == 6) winPoint();
+    else if (autonSelection == 5) rightSeven();
+    else if (autonSelection == 6) rightSplit();
 }
 
 /**
