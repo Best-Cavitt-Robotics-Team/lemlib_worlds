@@ -239,7 +239,7 @@ void rightFour(){
     // chassis.moveToPoint(23, 16, 1000, {.minSpeed = 50, .earlyExitRange = 4});
     // chassis.turnToHeading(180, 250, {.minSpeed = 50, .earlyExitRange = 3});
     // chassis.moveToPoint(23, 20, 750, {.minSpeed = 70});
-    chassis.moveToPose(23, 19, 180, 2000, {.forwards = false, .horizontalDrift = 4, .lead = 0.65, .minSpeed = 70, .earlyExitRange = 8});//6  //ms=50
+    chassis.moveToPose(23, 19, 180, 2000, {.forwards = false, .horizontalDrift = 4, .lead = 0.65, .minSpeed = 70, .earlyExitRange = 8});//65  //ms=50
     chassis.turnToHeading(180, 250); 
     
 }
@@ -374,7 +374,7 @@ void leftSplit(){
     ballblock.set_value(false);
     intaketop.move_velocity(300);
     descore.set_value(true);
-    pros::delay(1000);
+    pros::delay(1200);
     intaketop.move_velocity(0);
     // chassis.turnToHeading(-140, 250);
     chassis.turnToPoint(-20, 0, 250);
@@ -388,7 +388,7 @@ void leftSplit(){
     ballblock.set_value(true);
     descore.set_value(false);
     //left 4 code (skeleton)
-    pros::delay(1000);//1200
+    pros::delay(1200);//1200
     chassis.moveToPoint(-19, 13, 750, {.forwards = false, .maxSpeed = 100, .minSpeed = 80}, false); //l 0 //14
     intaketop.move_velocity(600);
     pros::delay(1500);
@@ -413,13 +413,14 @@ void winPoint(){
     intakebottom.move_velocity(-600);
     descore.set_value(true);
     pros::delay(1100); //tune //pev 1200
-    chassis.moveToPose(17.5, 17, 180, 750, {.forwards = false, .lead = 0.5, .maxSpeed = 100, .minSpeed = 70}, false);
+    chassis.moveToPose(17.5, 17, 180, 1250, {.forwards = false, .lead = 0.5, .maxSpeed = 100, .minSpeed = 70}, false);//750 ms
     intaketop.move_velocity(600);
     pros::delay(1200); //1000
     intaketop.move_velocity(0);
     scraper1.set_value(false);
     scraper2.set_value(false);
-    chassis.moveToPoint(18, 7, 750, {.minSpeed = 50, .earlyExitRange = 3});
+    chassis.moveToPoint(18, 7, 750, {.minSpeed = 50, .earlyExitRange = 3});//7
+    chassis.waitUntilDone();
     chassis.turnToHeading(305, 250, {.minSpeed = 30, .earlyExitRange = 3});
     chassis.moveToPoint(5, 12, 1000, {.minSpeed = 30, .earlyExitRange = 3});//9
     chassis.turnToHeading(270, 250, {.minSpeed = 30, .earlyExitRange = 3});
